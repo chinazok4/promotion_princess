@@ -9,14 +9,42 @@ except ImportError:
     sys.exit("Missing dependency: pip install pdfplumber") 
 
 
+def get_latest_file(path):
+    """
+    Scans through files in our volume and returns the path 
+    of the last uploaded file using modification time
+    """
+    files = [f for f in dbutils.fs.ls(path) if not f.isDir()]
+
+    if not files:
+        return None
+    else:
+        last = max(files, key=lambda f: f.modificationTime)
+        return last.path[5:]
+
+
 def extract_all_text(pdf_path):
      """
      Opens the PDF and extracts raw text from every page. 
-     Returns dict of { page_number (1-based): text }. 
+     Returns dict of { page_number (1-based): [text, [[[table_text]]]] }. 
      Page numbers are assigned by pdfplumber 
      — NOT from printed numbers in the document itself. 
      """
-     pass
+    pages = {}
+
+    # Open pdf using pdfplumber
+    with pdfplumber.open(pdf_path) as pdf:
+
+        # Loop through each pdf page, extract text data and table data, place data in list
+        for i, page in enumerate(pdf.pages, start=1):
+            contents = []
+            contents.append(page.extract_text())
+            contents.append(page.extract_tables(table_settings={"intersection_x_tolerance": 2, "intersection_y_tolerance": 30, "snap_x_tolerance": 10, "snap_y_tolerance": 8}) or "")
+            
+            # Add list to pages dictionary
+            pages[i] = contents
+                  
+    return pages
 
 
 def find_section_pages(pages):
