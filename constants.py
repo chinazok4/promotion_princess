@@ -26,7 +26,7 @@ COMMON_SYSTEM_INTRO = (
     "You are a structured data extractor working with HR competency framework documents."
     "Return ONLY a valid JSON array. No markdown, no code fences, no explanation. "
     "Each element must be a flat JSON object with exactly the keys specified."
-    ) 
+    )
 
 SOURCE_PATH = "/Volumes/promotion_princess/framework/cf_pdf"
 

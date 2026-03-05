@@ -8,6 +8,19 @@ try:
 except ImportError:
     sys.exit("Missing dependency: pip install pdfplumber") 
 
+def get_latest_file(path):
+    """
+    Scans through files in our volume and returns the path 
+    of the last uploaded file using modification time
+    """
+    files = [f for f in dbutils.fs.ls(path) if not f.isDir()]
+
+    if not files:
+        return None
+    else:
+        last = max(files, key=lambda f: f.modificationTime)
+        return last.path[5:]
+
 
 def get_latest_file(path):
     """
